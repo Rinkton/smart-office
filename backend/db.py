@@ -37,7 +37,7 @@ def clear_tables(cur, conn):
     for table_name in table_names:
         clear_table(cur, conn, table_name)
 
-def create_tables(cur):
+def create_tables(cur, conn):
     """
     Создает все нужные нам таблички
     """
@@ -53,10 +53,16 @@ def create_tables(cur):
     role VARCHAR(255)
     )
     """)
-
-    cur.execute("""CREATE TYPE stationary_type AS ENUM ('pen', 'pencil', 'eraser', 'ruler', 'scissors', 'glue', 'stapler', 'paper_clips', 'binder_clips', 'sticky_note', 'highlighter', 'tape', 'calculator', 'notebook', 'folder', 'index_cards', 'push_pins', 'rubber_bands', 'whiteboard_markers', 'correction_fluid');""")
-    cur.execute("""CREATE TYPE status_type AS ENUM ('online', 'away', 'dinner', 'smoking', 'busy', 'do_not_disturb', 'offline')""")
-    cur.execute("""CREATE TYPE priority_type AS ENUM ('irrelevant', 'moderate', 'critical')""")
+    # Жалуется, что мол уже существует,а ты опять создаешь. Прописал IF NOT EXISTS, но чёт тоже не приняло. Крч трайями пошёл
+    try: cur.execute("""CREATE TYPE stationary_type AS ENUM ('pen', 'pencil', 'eraser', 'ruler', 'scissors', 'glue', 'stapler', 'paper_clips', 'binder_clips', 'sticky_note', 'highlighter', 'tape', 'calculator', 'notebook', 'folder', 'index_cards', 'push_pins', 'rubber_bands', 'whiteboard_markers', 'correction_fluid');""")
+    except:
+        conn.rollback()
+    try: cur.execute("""CREATE TYPE status_type AS ENUM ('online', 'away', 'dinner', 'smoking', 'busy', 'do_not_disturb', 'offline')""")
+    except:
+        conn.rollback()
+    try:  cur.execute("""CREATE TYPE priority_type AS ENUM ('irrelevant', 'moderate', 'critical')""")
+    except:
+        conn.rollback()
     cur.execute("""CREATE TABLE IF NOT EXISTS stationary_problems (
     id serial PRIMARY KEY,
     created_at TIMESTAMP DEFAULT NOW(),

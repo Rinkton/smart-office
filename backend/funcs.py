@@ -13,6 +13,33 @@ conn = None
 
 # убрать # из апп роута, условие сделать нормальным
 
+def db_exec(what):
+    """
+    Функция, в которую поставляется строка, которая будет исполнена в Query Sql-я
+    Прекрасно понимаю, что это небезопасно,
+    но если что-то вдруг понадобится быстро сделать - неплохой вариант пока что
+    """
+    cur.execute(what)
+
+@app.route('/rooms', methods=['GET'])
+def get_rooms():
+    if request.method == 'GET':
+        cur.execute(
+            f"""SELECT id, created_at, updated_at, description, seats_count FROM meeting_rooms""")
+        jsone = jsonify(cur.fetchall())
+        return jsone
+
+@app.route('/stationary', methods=['POST'])
+def post_stationary_problem():
+    """
+    json должен иметь в себе user_id, type, amount, priority
+    """
+    if request.method == 'POST':
+        req = request.get_json()
+        cur.execute(
+            f"""INSERT INTO stationary_problem (created_at, updated_at, user_id, type, amount, priority) VALUES (NOW(), NOW(), {req[0]}, {req[1]}, {req[2]}, {req[3]}, )""")
+
+'''
 @app.route('/get_meeting_room', methods=['GET'])
 def get_meeting_room(id):
     if request.method == 'GET':
@@ -66,12 +93,15 @@ def pain(painId, pain , levelOfUrgency ):
 def register_meeting_room(id,meeting_roomsId, date, time):
     if request.method == 'POST':
       cur.execute(f"""INSERT INTO meeting_rooms_registration (id, meeting_roomsId, date, time) VALUES ({id}, {meeting_roomsId}, {date}, {time})""")
+'''
 
 if __name__ == "__main__":
     #app.run(debug=True)
     import testdata
     cur, conn = db.connect()
-    db.create_tables(cur)
+    db.create_tables(cur, conn)
+    cur.execute(
+        f"""INSERT INTO stationary_problems (created_at, updated_at, user_id, type, amount, priority) VALUES (NOW(), NOW(), 1, 'pen', 3, 'moderate')""")
     visualizator.visualize_tables(cur)
     testdata.create_test_data(cur)
     cur.execute("""SELECT * FROM meeting_rooms_description""")
