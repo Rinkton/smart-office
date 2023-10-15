@@ -35,3 +35,17 @@ Pro Office - это веб-приложение, призванное сокра
 * psycopg2 2.9.9 - в качестве адаптера PostgreSql для Питона
 * flask 3.0.0
 * prettytable 3.9.0 - для визуализации таблиц БД
+
+# Внешний вид сайта
+
+**Рабочий стол**
+![image](https://github.com/Rinkton/smart-office/assets/57531521/0f6b7cbe-9019-4dbf-bd7a-eb6adf5ce2c3)
+
+
+**Переговорные**
+
+![image](https://github.com/Rinkton/smart-office/assets/57531521/221e6ac4-1032-479c-ae42-32fbd819335b)
+
+**Карта офиса**
+
+![image](https://github.com/Rinkton/smart-office/assets/57531521/997e1939-94e5-4eed-bd9c-923095e18c96)
