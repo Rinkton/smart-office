@@ -22,21 +22,6 @@ Pro Office - это веб-приложение, призванное сокра
 * flask 3.0.0
 * prettytable 3.9.0 - для визуализации таблиц БД
 
-# Внешний вид сайта
-**Главная:**
-
-![image](https://github.com/Rinkton/smart-office/assets/57531521/b29f26fb-6e3f-4cbc-9280-da2dacc0580c)
-
-**Сервис для пополнения канцелярских принадлежностей:**
-
-![image](https://github.com/Rinkton/smart-office/assets/57531521/7f15e0fd-036d-4296-a6c9-c1131a7d62dc)
-
-**Занятость переговорных:**
-
-![image](https://github.com/Rinkton/smart-office/assets/57531521/10130587-6d43-4717-b44a-ca3607deac7b)
-
-**Карта офиса:**
-
 ![image](https://github.com/Rinkton/smart-office/assets/57531521/294132fa-0021-4bcc-b13e-99d78f1eb8ce)
 
 
