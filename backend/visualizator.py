@@ -17,3 +17,4 @@ def visualize_tables(cur):
     table_names = db.get_table_names(cur)
     for table_name in table_names:
         visualize_table(cur, table_name)
+    print("End of visualizing")
