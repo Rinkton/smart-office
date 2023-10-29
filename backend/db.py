@@ -80,8 +80,9 @@ def create_tables(cur, conn):
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     
-    description VARCHAR(255),
-    seats_count INT
+    name VARCHAR(255),
+    description VARCHAR(2000),
+    time INT[]
     )""")
 
     cur.execute("""CREATE TABLE IF NOT EXISTS meeting_rooms_booking (

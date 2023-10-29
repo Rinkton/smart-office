@@ -1,16 +1,12 @@
 from prettytable import from_db_cursor
 import db
 
+# TODO: After UPDATE the order of visualizing rows changing(recently updated go down, even if their id is lowest)
+
 def visualize_table(cur, table_name):
     print(table_name)
     cur.execute(f"select * from {table_name}")
-    result = cur.fetchall()
-    if cur.rowcount > 0:
-        cur.execute(f"select * from {table_name}")
-        x = from_db_cursor(cur)
-        print(x)
-    else:
-        print("the table is empty")
+    print(from_db_cursor(cur))
     print()
 
 def visualize_tables(cur):

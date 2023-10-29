@@ -21,25 +21,27 @@ def db_exec(what):
     """
     cur.execute(what)
 
-@app.route('/rooms', methods=['GET'])
-def get_rooms():
-    if request.method == 'GET':
-        cur.execute(
-            f"""SELECT id, created_at, updated_at, description, seats_count FROM meeting_rooms""")
-        jsone = jsonify(cur.fetchall())
-        return jsone
+@app.route('/meeting_room/<id>', methods=['GET'])
+def get_meeting_room(id):
+    return jsonify({"message": f"Hello, {id}"})
 
-@app.route('/test', methods=['GET'])
-def test():
-    return jsonify(["hi!"])
-
-@app.route('/testinp', methods=['POST'])
-def testinp():
-    return jsonify([f"hi, {request.args.get('s')}!"])
-
-@app.route('/testinpo/<s>', methods=['POST'])
-def testinpo(s):
-    return jsonify({"message": f"Hello, {s}"})
+@app.route('/meeting_room/<id>', methods=['POST'])
+def take_meeting_room_time(id):
+    data = request.json
+    cur.execute(f"SELECT time FROM meeting_rooms WHERE id={id}")
+    time = cur.fetchone()[0]
+    no_time_intersections = len(time + data["time"]) == len(set(time + data["time"]))
+    if no_time_intersections:
+        new_time = sorted(time + data['time'])
+        cur.execute(f"UPDATE meeting_rooms SET time = ARRAY {new_time} WHERE id={id}")
+        return data, 201
+    else:
+        return jsonify({"message": "Это время уже занято"}), 404
+@app.route('/v', methods=['GET'])
+def visualize_please():
+    global cur
+    visualizator.visualize_tables(cur)
+    return jsonify({"message": "visualized"}), 200
 
 @app.route('/stationary', methods=['POST'])
 def post_stationary_problem():
@@ -51,71 +53,12 @@ def post_stationary_problem():
         cur.execute(
             f"""INSERT INTO stationary_problem (created_at, updated_at, user_id, type, amount, priority) VALUES (NOW(), NOW(), {req[0]}, {req[1]}, {req[2]}, {req[3]}, )""")
 
-'''
-@app.route('/get_meeting_room', methods=['GET'])
-def get_meeting_room(id):
-    if request.method == 'GET':
-        cur.execute(
-            f"""SELECT id, meeting_roomsId, date, time FROM meeting_rooms_registration WHERE id={id}""")
-        fetch = cur.fetchall()[0]
-        if not fetch:
-            return ""
-        fetch = list(fetch)
-        fetch[2] = date2str(fetch[2])
-        fetch[3] = time2str(fetch[3])
-        fetch = tuple(fetch)
-        jsone = jsonify(fetch)
-        return jsone
-
-@app.route('/get_descriptions', methods=['GET'])
-def get_descriptions():
-    if request.method == 'GET':
-        cur.execute("""SELECT * FROM meeting_rooms_description""")
-        jsone = jsonify(cur.fetchall())
-        return jsone
-
-@app.route('/sign_up', methods=['POST'])
-def sign_up(name, password):
-    if request.method == 'POST':
-      cur.execute(f"""INSERT INTO worker (name, password) VALUES ({name}, {password})""")
-
-@app.route('/sign_in', methods=['GET'])
-def sign_in(name, password):
-  """
-  Может вернуть 'неверный логин или пароль'
-  """
-  if request.method == 'GET':
-    cur.execute(f"""SELECT * FROM worker WHERE name={name} AND password={password}""")
-    if cur.fetchall()==None:
-      return 'неверный логин или пароль'
-    json = jsonify(cur.fetchall())
-    return json
-
-@app.route('/necessery', methods=['POST'])
-def necessery(chancelleryId ,necessaryItem , quantity, levelOfUrgency ):
-    if request.method == 'POST':
-      cur.execute(f"""INSERT INTO chancellery (chancelleryId ,necessaryItem , quantity, levelOfUrgency) VALUES ({chancelleryId} ,{necessaryItem} , {quantity}, {levelOfUrgency})""")
-
-@app.route('/pain', methods=['POST'])
-def pain(painId, pain , levelOfUrgency ):
-    if request.method == 'POST':
-      cur.execute(f"""INSERT INTO pain (painId, pain , levelOfUrgency) VALUES ({painId}, {pain} , {levelOfUrgency})""")
-
-@app.route('/register_meeting_room', methods=['POST'])
-def register_meeting_room(id,meeting_roomsId, date, time):
-    if request.method == 'POST':
-      cur.execute(f"""INSERT INTO meeting_rooms_registration (id, meeting_roomsId, date, time) VALUES ({id}, {meeting_roomsId}, {date}, {time})""")
-'''
-
 if __name__ == "__main__":
-    app.run(debug=True)
-    import testdata
     cur, conn = db.connect()
-    #db.create_tables(cur, conn)
+    db.clear_tables(cur, conn)
+    db.create_tables(cur, conn)
+    cur.execute("INSERT INTO meeting_rooms (name, description, time) VALUES ('kat', 'fsafsg', ARRAY [5, 3])")
+    cur.execute("INSERT INTO meeting_rooms (name, description, time) VALUES ('aba', 'fd', ARRAY [2, 3, 4])")
     visualizator.visualize_tables(cur)
-    #cur.execute(
-        #f"""INSERT INTO stationary_problems (created_at, updated_at, user_id, type, amount, priority) VALUES (NOW(), NOW(), 1258, 'pen', 3, 'moderate')""")
-    visualizator.visualize_tables(cur)
-    #cur.execute("""SELECT * FROM meeting_rooms_description""")
-
-
+    from waitress import serve
+    serve(app, host="127.0.0.1", port=5000)
