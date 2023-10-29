@@ -53,6 +53,7 @@ def create_tables(cur, conn):
     role VARCHAR(255)
     )
     """)
+    conn.commit()
     # Жалуется, что мол уже существует,а ты опять создаешь. Прописал IF NOT EXISTS, но чёт тоже не приняло. Крч трайями пошёл
     try: cur.execute("""CREATE TYPE stationary_type AS ENUM ('pen', 'pencil', 'eraser', 'ruler', 'scissors', 'glue', 'stapler', 'paper_clips', 'binder_clips', 'sticky_note', 'highlighter', 'tape', 'calculator', 'notebook', 'folder', 'index_cards', 'push_pins', 'rubber_bands', 'whiteboard_markers', 'correction_fluid');""")
     except:

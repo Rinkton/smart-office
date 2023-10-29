@@ -29,6 +29,18 @@ def get_rooms():
         jsone = jsonify(cur.fetchall())
         return jsone
 
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify(["hi!"])
+
+@app.route('/testinp', methods=['POST'])
+def testinp():
+    return jsonify([f"hi, {request.args.get('s')}!"])
+
+@app.route('/testinpo/<s>', methods=['POST'])
+def testinpo(s):
+    return jsonify({"message": f"Hello, {s}"})
+
 @app.route('/stationary', methods=['POST'])
 def post_stationary_problem():
     """
@@ -96,15 +108,14 @@ def register_meeting_room(id,meeting_roomsId, date, time):
 '''
 
 if __name__ == "__main__":
-    #app.run(debug=True)
+    app.run(debug=True)
     import testdata
     cur, conn = db.connect()
-    db.create_tables(cur, conn)
-    cur.execute(
-        f"""INSERT INTO stationary_problems (created_at, updated_at, user_id, type, amount, priority) VALUES (NOW(), NOW(), 1, 'pen', 3, 'moderate')""")
+    #db.create_tables(cur, conn)
     visualizator.visualize_tables(cur)
-    testdata.create_test_data(cur)
-    cur.execute("""SELECT * FROM meeting_rooms_description""")
-    print(cur.fetchall() == None)
+    #cur.execute(
+        #f"""INSERT INTO stationary_problems (created_at, updated_at, user_id, type, amount, priority) VALUES (NOW(), NOW(), 1258, 'pen', 3, 'moderate')""")
+    visualizator.visualize_tables(cur)
+    #cur.execute("""SELECT * FROM meeting_rooms_description""")
 
 
