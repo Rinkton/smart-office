@@ -4,7 +4,7 @@ def connect():
     """
     Подключает к БД и возвращает курсор
     """
-    conn = psycopg2.connect(host="localhost", dbname="postgres", user="postgres", password="1234567890", port=5432)
+    conn = psycopg2.connect(host="localhost", dbname="smartoffice", user="postgres", password="psql", port=5432)
     cur = conn.cursor()
     return cur, conn
 
