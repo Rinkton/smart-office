@@ -6,13 +6,14 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-export function RoomCard({ img, alt, title, description, room_id }) {
+export function RoomCard({ img, alt, title, description, room_id, setOpenDialog }) {
+
     return (
         <Card
             sx={{
                 display: "flex",
                 flexDirection: "row",
-                maxWidth: "900px"
+                maxWidth: "900px",
             }}
         >
             <CardMedia
@@ -47,8 +48,19 @@ export function RoomCard({ img, alt, title, description, room_id }) {
                     justifyContent: "center",
                 }}
             >
-                <Button size="small" color="success">Забронировать</Button>
-                <Button size="small" color="primary">Подробнее</Button>
+                <Button
+                    size="small"
+                    color="success"
+                    onClick={() => setOpenDialog(room_id)}
+                >
+                    Забронировать
+                </Button>
+                <Button
+                    size="small"
+                    color="primary"
+                >
+                    Подробнее
+                </Button>
             </CardActions>
         </Card>
     );

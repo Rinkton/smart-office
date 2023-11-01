@@ -1,15 +1,14 @@
 from flask import request, jsonify, Flask
+from flask_cors import CORS
 
 import db
 import visualizator
-from conv import time2str, date2str
-
 
 app = Flask(__name__)
+CORS(app)
 
 cur = None
 conn = None
-
 
 @app.route('/meeting_room', methods=['GET'])
 def get_meeting_rooms():
@@ -48,7 +47,7 @@ def post_meeting_room_time(id):
     if no_time_intersections:
         new_time = sorted(time + data['time'])
         cur.execute(f"UPDATE meeting_rooms SET time = ARRAY {new_time} WHERE id={id}")
-        return data, 201
+        return jsonify(data), 201
     else:
         return jsonify({"message": "Это время уже занято"}), 404
 
@@ -64,10 +63,11 @@ def delete_meeting_room_time(id):
             pass
     if len(time) > 0:
         cur.execute(f"UPDATE meeting_rooms SET time = ARRAY {time} WHERE id={id}")
-    else: # По какой-то причине я не могу просто дать пустой массив, требует тип массива, который я не знаю как указать
+    else: 
+        # По какой-то причине я не могу просто дать пустой массив, требует тип массива, который я не знаю как указать
         # Посему приходится вводить этот if-else
         cur.execute(f"UPDATE meeting_rooms SET time = ARRAY[]::integer[] WHERE id={id}")
-    return data, 200
+    return jsonify(data), 200
 
 @app.route('/v', methods=['GET'])
 def visualize_please():
@@ -79,8 +79,14 @@ if __name__ == "__main__":
     cur, conn = db.connect()
     db.clear_tables(cur, conn)
     db.create_tables(cur, conn)
-    cur.execute("INSERT INTO meeting_rooms (name, description, time) VALUES ('kat', 'fsafsg', ARRAY [5, 3])")
-    cur.execute("INSERT INTO meeting_rooms (name, description, time) VALUES ('aba', 'fd', ARRAY [2, 3, 4])")
+
+    # Start dataset
+    cur.execute("INSERT INTO meeting_rooms (name, description, time) VALUES ('Хипстерский хаб', '9 мест', ARRAY [5, 3])")
+    cur.execute("INSERT INTO meeting_rooms (name, description, time) VALUES ('Творческая Коммуна', '15 мест', ARRAY [2, 3, 4])")
+    cur.execute("INSERT INTO meeting_rooms (name, description) VALUES ('Мастерская Успеха', '11 мест')")
+    cur.execute("INSERT INTO meeting_rooms (name, description) VALUES ('Пространство идей', '13 мест')")
+    cur.execute("INSERT INTO meeting_rooms (name, description) VALUES ('Зона Инноваций', '8 мест')")
+    
     visualizator.visualize_tables(cur)
-    from waitress import serve
-    serve(app, host="127.0.0.1", port=5000)
+
+    app.run(host="127.0.0.1", port=5001)
